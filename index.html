@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NFC Bridge – Example</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { max-width: 40rem; margin: 0 auto; padding: 1.5rem; line-height: 1.5; }
+    button { font: inherit; font-size: 1.1rem; padding: .8rem 1.4rem; border-radius: .6rem; border: 0;
+             background: #2563eb; color: #fff; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    pre { background: #8881; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .85rem; }
+    .note { color: #b45309; }
+  </style>
+</head>
+<body>
+  <h1>NFC Bridge example</h1>
+  <p>This page loads <code>nfc-bridge.js</code> from a CDN and wires it to a button. Open it in Chrome on Android, tap the button, then hold an NFC tag to the back of your phone.</p>
+
+  <button id="scan">Scan NFC tag</button>
+  <p id="support" class="note" hidden></p>
+
+  <h2>Result</h2>
+  <pre id="output">Nothing scanned yet.</pre>
+
+  <h2>The code</h2>
+  <p>Here's all you need to add to a page:</p>
+  <pre><code>&lt;script src="https://web-nfc-fawn.vercel.app/nfc-bridge.js"&gt;&lt;/script&gt;
+
+&lt;button id="scan"&gt;Scan NFC tag&lt;/button&gt;
+
+&lt;script&gt;
+  NfcBridge.bind(document.getElementById('scan'), {
+    getAuthData: () =&gt; ({ session: 'demo_session', nonce: 'demo_nonce' }),
+    onResult: result =&gt; console.log(result),
+    onError: err =&gt; console.error(err.code, err.message)
+  });
+&lt;/script&gt;</code></pre>
+
+  <!-- 1. Load the library -->
+  <script src="https://web-nfc-fawn.vercel.app/nfc-bridge.js"></script>
+
+  <!-- 2. Bind it to a button -->
+  <script>
+    const output = document.getElementById('output');
+
+    const scanner = NfcBridge.bind(document.getElementById('scan'), {
+      getAuthData: () => ({ session: 'demo_session', nonce: 'demo_nonce' }),
+      onResult: result => { output.textContent = JSON.stringify(result, null, 2); },
+      onError: err => { output.textContent = `Error: ${err.code}\n${err.message}`; }
+    });
+
+    if (!scanner.support.supported) {
+      const note = document.getElementById('support');
+      note.textContent = 'Web NFC isn\'t available here: ' +
+        scanner.support.reasons.map(r => r.message).join(' ') +
+        ' Open this page in Chrome on an Android phone with NFC turned on.';
+      note.hidden = false;
+    }
+  </script>
+</body>
+</html>
