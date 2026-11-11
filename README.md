@@ -10,17 +10,20 @@ A one-page demo showing how to drop the NFC Bridge library into any site with a 
 <script src="https://web-nfc-fawn.vercel.app/nfc-bridge.js"></script>
 
 <button id="scan">Scan NFC tag</button>
+<pre id="output"></pre>
 
 <script>
+  const output = document.getElementById('output');
+
   NfcBridge.bind(document.getElementById('scan'), {
     getAuthData: () => ({ session: 'demo_session', nonce: 'demo_nonce' }),
-    onResult: result => console.log(result),
-    onError: err => console.error(err.code, err.message)
+    onResult: result => { output.textContent = JSON.stringify(result, null, 2); },
+    onError: err => { output.textContent = `Error: ${err.code}\n${err.message}`; }
   });
 </script>
 ```
 
-Tap the button and hold a tag to the phone. `onResult` receives JSON with your `session`/`nonce`, the tap timestamp, and the tag's serial number and decoded NDEF records.
+Tap the button and hold a tag to the phone. The result is shown on the page. `onResult` receives JSON with your `session`/`nonce`, the tap timestamp, and the tag's serial number and decoded NDEF records.
 
 ## Requirements
 

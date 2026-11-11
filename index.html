@@ -29,12 +29,15 @@
   <pre><code>&lt;script src="https://web-nfc-fawn.vercel.app/nfc-bridge.js"&gt;&lt;/script&gt;
 
 &lt;button id="scan"&gt;Scan NFC tag&lt;/button&gt;
+&lt;pre id="output"&gt;&lt;/pre&gt;
 
 &lt;script&gt;
+  const output = document.getElementById('output');
+
   NfcBridge.bind(document.getElementById('scan'), {
     getAuthData: () =&gt; ({ session: 'demo_session', nonce: 'demo_nonce' }),
-    onResult: result =&gt; console.log(result),
-    onError: err =&gt; console.error(err.code, err.message)
+    onResult: result =&gt; { output.textContent = JSON.stringify(result, null, 2); },
+    onError: err =&gt; { output.textContent = `Error: ${err.code}\n${err.message}`; }
   });
 &lt;/script&gt;</code></pre>
 
